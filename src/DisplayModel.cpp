@@ -1872,7 +1872,13 @@ void DisplayModel::CopyNavHistory(DisplayModel& orig) {
 }
 
 bool DisplayModel::ShouldCacheRendering(int pageNo) const {
-    // recommend caching for all documents
+    DisplayMode mode = GetDisplayMode();
+    // In non-continuous modes render pages synchronously to avoid
+    // pages appearing at different times which may cause flicker.
+    if (!IsContinuous(mode)) {
+        return false;
+    }
+    // default behaviour
     return true;
 }
 
