@@ -59,6 +59,8 @@
 #include "GlobalPrefs.h"
 #include "PdfSync.h"
 #include "ProgressUpdateUI.h"
+#include "RenderCache.h"
+#include "SumatraPDF.h"
 #include "TextSelection.h"
 #include "TextSearch.h"
 
@@ -208,7 +210,26 @@ bool DisplayModel::GetDisplayR2L() const {
 }
 
 void DisplayModel::RepaintDisplay() {
+    if (!VisiblePagesReady()) {
+        return;
+    }
     cb->Repaint();
+}
+
+bool DisplayModel::VisiblePagesReady() {
+    int rot = GetRotation();
+    for (int pageNo = 1; pageNo <= PageCount(); ++pageNo) {
+        PageInfo* info = GetPageInfo(pageNo);
+        if (!info || info->visibleRatio <= 0.0f || !info->shown) {
+            continue;
+        }
+        float zoom = GetZoomReal(pageNo);
+        TilePosition tile(gRenderCache.GetTileRes(this, pageNo), 0, 0);
+        if (!gRenderCache.Exists(this, pageNo, rot, zoom, &tile)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool DisplayModel::InPresentation() const {
