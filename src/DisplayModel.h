@@ -205,6 +205,7 @@ struct DisplayModel : DocController {
     Point GetContentStart(int pageNo) const;
     void RecalcVisibleParts() const;
     void RenderVisibleParts();
+    void RenderVisiblePagesSync();
     void AddNavPoint();
     RectF GetContentBox(int pageNo) const;
     void CalcZoomReal(float zoomVirtual);
