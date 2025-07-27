@@ -1168,6 +1168,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     UpdateGlobalPrefs(flags);
     SetCurrentLang(flags.lang ? flags.lang : gGlobalPrefs->uiLanguage);
 
+    // If the Shift key is held when launching a file and tabs are enabled,
+    // open it in a new window instead of a new tab.
+    if (IsShiftPressed() && flags.fileNames.size() > 0 && gGlobalPrefs->useTabs) {
+        flags.inNewWindow = true;
+    }
+
 #if defined(DEBUG)
     void TestBrowser(); // scratch.cpp
     if (flags.testBrowser) {
